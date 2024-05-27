@@ -1,0 +1,1460 @@
+openapi: 3.0.3
+info:
+  title: Inventory Management API
+  version: 1.0.0
+  description: Inventory Management API
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+servers:
+  - url: http://localhost:8080
+    description: Local server
+tags:
+  - name: User
+    description: User management
+  - name: Household
+    description: Household management
+  - name: Product
+    description: Item management
+  - name: Category
+    description: Category management
+paths:
+  /api/v1/user:
+    post:
+      summary: Create a new user
+      operationId: createUser
+      security:
+        - apiKeyAuth: []
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update an existing user
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/user/clerk:
+    post:
+      summary: Create a new clerk user
+      operationId: createClerkUser
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClerkUserEvent"
+      responses:
+        "201":
+          description: Clerk user created
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/user/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    get:
+      summary: Get user by ID
+      operationId: getUserById
+      tags:
+        - User
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete user by ID
+      operationId: deleteUser
+      tags:
+        - User
+      responses:
+        "204":
+          description: User deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/household:
+    get:
+      summary: Get households by user ID
+      operationId: getHouseholdByUserId
+      tags:
+        - Household
+      responses:
+        "200":
+          description: Households found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HouseholdMemberResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new household
+      operationId: createHousehold
+      tags:
+        - Household
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateHouseholdRequest"
+      responses:
+        "201":
+          description: Household created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HouseholdResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/household/addMember:
+    post:
+      summary: Add a member to the household
+      operationId: addHouseholdMember
+      tags:
+        - Household
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMemberToHouseholdRequest"
+      responses:
+        "201":
+          description: Member added to the household
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HouseholdResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/household/generateInviteCode:
+    post:
+      summary: Generate invite code for the household
+      operationId: generateInviteCode
+      tags:
+        - Household
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateCodeRequest"
+      responses:
+        "201":
+          description: Invite code sent
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product:
+    post:
+      summary: Create a new item
+      operationId: createItem
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        "201":
+          description: Item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/alert:
+    get:
+      summary: Get alerts by productId ID
+      operationId: getAlertsByProductId
+      parameters:
+        - $ref: "#/components/parameters/ProductIdQuery"
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Alerts found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductAlertResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new alert for a product
+      operationId: createAlert
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductAlertRequest"
+      responses:
+        "201":
+          description: Alert created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAlertResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/alert/{alertId}:
+    parameters:
+      - name: alertId
+        in: path
+        description: ID of the alert
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get alert by ID
+      operationId: getAlertById
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Alert found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAlertResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update alert by ID
+      operationId: updateAlert
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductAlertRequest"
+      responses:
+        "200":
+          description: Alert updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAlertResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete alert by ID
+      operationId: deleteAlert
+      tags:
+        - Product
+      responses:
+        "204":
+          description: Alert deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/task:
+    get:
+      summary: Get tasks by product ID
+      operationId: getTasksByProductId
+      parameters:
+        - $ref: "#/components/parameters/ProductIdQuery"
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Tasks found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductTaskResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new task for a product
+      operationId: createTask
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductTaskRequest"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductTaskResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/task/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        description: ID of the task
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get task by ID
+      operationId: getTaskById
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductTaskResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update task by ID
+      operationId: updateTask
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductTaskRequest"
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductTaskResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete task by ID
+      operationId: deleteTask
+      tags:
+        - Product
+      responses:
+        "204":
+          description: Task deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/{categoryId}:
+    parameters:
+      - $ref: "#/components/parameters/CategoryId"
+    get:
+      summary: Get items by category ID
+      operationId: getItemsByCategoryId
+      tags:
+        - Product
+      parameters:
+        - name: skip
+          in: query
+          required: false
+          description: Number of items to skip
+          schema:
+            type: integer
+            default: 0
+            example: 0
+        - name: limit
+          in: query
+          required: false
+          description: Number of items to return
+          schema:
+            type: integer
+            default: 50
+            example: 20
+      responses:
+        "200":
+          description: Items found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsByCategoryResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update item by ID
+      operationId: updateItem
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete item by ID
+      operationId: deleteItem
+      tags:
+        - Product
+      parameters:
+        - name: itemId
+          in: query
+          description: ID of item to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Item deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/category:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/CategoryIdQuery"
+      summary: Get categories by category ID
+      operationId: getCategoryById
+      tags:
+        - Category
+      responses:
+        "200":
+          description: Category found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new category
+      operationId: createCategory
+      tags:
+        - Category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+      responses:
+        "201":
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update category by ID
+      operationId: updateCategory
+      tags:
+        - Category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+      responses:
+        "200":
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete category by ID
+      operationId: deleteCategory
+      tags:
+        - Category
+      parameters:
+        - $ref: "#/components/parameters/CategoryIdQuery"
+      responses:
+        "204":
+          description: Category deleted
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/category/{householdId}:
+    parameters:
+      - $ref: "#/components/parameters/HouseholdId"
+    get:
+      summary: Get categories by household ID
+      operationId: getCategoriesByHouseholdId
+      tags:
+        - Category
+      responses:
+        "200":
+          description: Categories found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/single/{productId}:
+    get:
+      summary: Get item by ID
+      operationId: getSingleItemById
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Item found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/product/search/{householdId}:
+    get:
+      summary: Search for items
+      operationId: searchItems
+      tags:
+        - Product
+      parameters:
+        - name: query
+          in: query
+          description: Search query
+          required: true
+          schema:
+            type: string
+            example: iPhone
+        - $ref: "#/components/parameters/SkipQuery"
+        - $ref: "#/components/parameters/LimitQuery"
+        - $ref: "#/components/parameters/HouseholdId"
+      responses:
+        "200":
+          description: Items found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /api/v1/api-product/{gtin}:
+    get:
+      summary: Get item by GTIN
+      operationId: getApiItemByGtin
+      parameters:
+        - name: gtin
+          in: path
+          description: GTIN of the item
+          required: true
+          schema:
+            type: string
+            example: 1234567890123
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Item found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIProduct"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  schemas:
+    ProductsByCategoryResponse:
+      type: object
+      required:
+        - categoryId
+        - householdId
+        - categoryName
+        - options
+        - products
+      properties:
+        categoryId:
+          $ref: "#/components/schemas/CategoryId"
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        categoryName:
+          $ref: "#/components/schemas/Name"
+        options:
+          $ref: "#/components/schemas/Options"
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExtendedProduct"
+    ExtendedProduct:
+      allOf:
+        - $ref: "#/components/schemas/Product"
+        - type: object
+          properties:
+            categoryName:
+              $ref: "#/components/schemas/Name"
+    ProductTaskRequest:
+      type: object
+      required:
+        - householdId
+        - categoryId
+        - productId
+        - action
+        - quantity
+        - frequency
+      properties:
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        categoryId:
+          $ref: "#/components/schemas/CategoryId"
+        productId:
+          $ref: "#/components/schemas/ProductId"
+        action:
+          $ref: "#/components/schemas/ItemAction"
+        quantity:
+          type: number
+          description: Quantity of the item
+          example: 10
+        frequency:
+          $ref: "#/components/schemas/TaskFrequency"
+        daysOfWeek:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayOfWeek"
+    ProductTaskResponse:
+      allOf:
+        - $ref: "#/components/schemas/ProductTaskRequest"
+        - type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/ExposedId"
+            lastRun:
+              $ref: "#/components/schemas/DateString"
+            nextRun:
+              $ref: "#/components/schemas/DateString"
+            active:
+              type: boolean
+              description: Is the task active
+              example: true
+    ProductAlertRequest:
+      type: object
+      required:
+        - householdId
+        - categoryId
+        - productId
+        - threshold
+        - type
+      properties:
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        categoryId:
+          $ref: "#/components/schemas/CategoryId"
+        productId:
+          $ref: "#/components/schemas/ProductId"
+        threshold:
+          type: number
+          description: Threshold for the alert
+          example: 10
+        action:
+          $ref: "#/components/schemas/TokenType"
+        type:
+          $ref: "#/components/schemas/AlertType"
+    ProductAlertResponse:
+      allOf:
+        - $ref: "#/components/schemas/ProductAlertRequest"
+        - type: object
+          properties:
+            id:
+              $ref: "#/components/schemas/ExposedId"
+    GenerateCodeRequest:
+      type: object
+      required:
+        - householdId
+        - tokenType
+        - token
+        - role
+      properties:
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        tokenType:
+          $ref: "#/components/schemas/TokenType"
+        token:
+          type: string
+          description: Email or phone number of the user
+          example: example@example.com
+        role:
+          $ref: "#/components/schemas/HouseholdRole"
+    TokenType:
+      type: string
+      description: How the invite code should be sent
+      enum:
+        - email
+        - sms
+    AddMemberToHouseholdRequest:
+      type: object
+      required:
+        - inviteCode
+      properties:
+        inviteCode:
+          $ref: "#/components/schemas/InviteCode"
+        setToPrimary:
+          $ref: "#/components/schemas/IsPrimary"
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - phoneNumber
+        - email
+      properties:
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+          description: Username of the user
+          example: johndoe
+        clerkCreated:
+          type: integer
+          description: Clerk created timestamp
+          example: 1633660800
+        profileImage:
+          type: string
+          description: Profile image of the user
+          example: https://example.com/profile.jpg
+        phoneNumber:
+          type: string
+          description: Phone number of the user
+          example: +1234567890
+        origin:
+          type: string
+          description: Origin of the user
+          example: Google
+        firstName:
+          type: string
+          description: First name of the user
+          example: John
+        lastName:
+          type: string
+          description: Last name of the user
+          example: Doe
+        email:
+          type: string
+          description: Email of the user
+          example: example@example.com
+    Category:
+      type: object
+      required:
+        - name
+        - householdId
+        - createdBy
+      properties:
+        id:
+          $ref: "#/components/schemas/ExposedId"
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        name:
+          $ref: "#/components/schemas/Name"
+        description:
+          type: string
+          description: Description of the category
+          example: Electronic devices
+        createdBy:
+          $ref: "#/components/schemas/UserId"
+        icon:
+          type: string
+          description: Icon of the category
+          example: electronics
+        iconColor:
+          type: string
+          description: Icon color of the category
+          example: "#000000"
+    Product:
+      type: object
+      required:
+        - name
+        - quantity
+        - defaultQuantity
+        - householdId
+        - categoryId
+        - createdBy
+      properties:
+        id:
+          $ref: "#/components/schemas/ExposedId"
+        name:
+          $ref: "#/components/schemas/Name"
+        quantity:
+          type: number
+          description: Quantity of the item
+          example: 10
+        defaultQuantity:
+          type: number
+          description: Default quantity of the item
+          example: 10
+        unit:
+          type: string
+          description: Unit of the item
+          example: pcs
+        description:
+          type: string
+          description: Description of the item
+          example: Latest iPhone model
+        unitPrice:
+          type: number
+          description: Unit price of the item
+          example: 1000
+        imageUrl:
+          type: string
+          description: Image URL of the item
+          example: https://example.com/iphone13.jpg
+        gtin:
+          type: string
+          description: Global Trade Item Number of the item
+          example: 1234567890123
+        expirationDate:
+          $ref: "#/components/schemas/DateString"
+        purchaseDate:
+          $ref: "#/components/schemas/DateString"
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        categoryId:
+          $ref: "#/components/schemas/CategoryId"
+        createdBy:
+          $ref: "#/components/schemas/UserId"
+    CreateHouseholdRequest:
+      type: object
+      required:
+        - name
+        - createdBy
+      properties:
+        householdName:
+          $ref: "#/components/schemas/Name"
+        createdBy:
+          $ref: "#/components/schemas/UserId"
+        isPrimary:
+          $ref: "#/components/schemas/IsPrimary"
+    HouseholdResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ExposedId"
+        name:
+          $ref: "#/components/schemas/Name"
+        createdBy:
+          $ref: "#/components/schemas/UserId"
+        ownerId:
+          $ref: "#/components/schemas/UserId"
+        isPrimary:
+          $ref: "#/components/schemas/IsPrimary"
+        guid:
+          type: string
+          description: Unique identifier for the household
+          example: 123e4567-e89b-12d3-a456-426614174000
+        inviteCode:
+          $ref: "#/components/schemas/InviteCode"
+    ItemUnit:
+      type: string
+      description: Unit of the item
+      enum:
+        - unit
+        - kg
+        - g
+        - l
+        - ml
+        - lbs
+        - pcs
+        - pack
+        - bottle
+        - can
+        - jar
+        - box
+        - bag
+        - roll
+        - piece
+    ItemAction:
+      type: string
+      description: Action to be performed on the item
+      example: increase
+      enum:
+        - increase
+        - decrease
+        - set
+    HouseholdMemberResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/HouseholdMember"
+    Name:
+      type: string
+      description: Name of the household
+      example: Home
+    HouseholdMember:
+      type: object
+      properties:
+        householdId:
+          $ref: "#/components/schemas/HouseholdId"
+        role: # HouseholdRole, but DB doesn't translate well, so using string
+          type: string
+        name:
+          $ref: "#/components/schemas/Name"
+        isPrimary:
+          $ref: "#/components/schemas/IsPrimary"
+    HouseholdRole:
+      type: string
+      description: Role of the user in the household
+      default: member
+      enum:
+        - admin
+        - member
+        - owner
+        - observer
+    DateString:
+      type: string
+      description: date in yyyy-MM-dd format
+      pattern: ^\d{4}-(0[1-9]|1[0-2])-\d{2}$
+      example: 2023-12-31
+    AlertType:
+      type: string
+      description: Type of the alert
+      enum:
+        - quantity
+        - expiration
+    HouseholdId:
+      type: integer
+      description: Identifier for the household to invite the user to
+      example: 1
+    CategoryId:
+      type: integer
+      description: Identifier for the category
+      example: 1
+    ProductId:
+      type: integer
+      description: Identifier for the item
+      example: 1
+    UserId:
+      type: string
+      description: Identifier for the user
+      example: user_123456
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: INVALID_REQUEST
+        message:
+          type: string
+          example: Invalid request
+        additionalProperties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Error"
+    UserClaims:
+      type: object
+      properties:
+        sub:
+          type: string
+          description: Subject
+          example: user_123456
+        username:
+          type: string
+          description: Username
+          example: johndoe
+        role:
+          $ref: "#/components/schemas/HouseholdRole"
+    DayOfWeek:
+      type: string
+      description: Day of the week
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+    TaskFrequency:
+      type: string
+      description: Frequency of the task
+      enum:
+        - daily
+        - weekly
+        - bi-weekly
+        - monthly
+        - bi-monthly
+        - quarterly
+        - semi-annually
+        - annually
+    ExposedId:
+      type: integer
+      description: Identifier for the object
+      example: 1
+    IsPrimary:
+      type: boolean
+      description: Is the object primary
+      example: true
+    InviteCode:
+      type: string
+      description: Invite code for the object
+      example: 123456
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: INVALID_REQUEST
+        message:
+          type: string
+          example: Invalid request
+        severity:
+          $ref: "#/components/schemas/ErrorSeverity"
+    ErrorSeverity:
+      type: string
+      description: Severity of the error
+      example: ERROR
+      enum:
+        - INFO
+        - WARNING
+        - ERROR
+        - FATAL
+    ClerkUserEvent:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/UserData"
+        object:
+          type: string
+        type:
+          type: string
+    UserData:
+      type: object
+      properties:
+        backup_code_enabled:
+          type: boolean
+        banned:
+          type: boolean
+        create_organization_enabled:
+          type: boolean
+        created_at:
+          type: integer
+        delete_self_enabled:
+          type: boolean
+        email_addresses:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailAddress"
+        external_accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExternalAccount"
+        external_id:
+          type: string
+          nullable: true
+        first_name:
+          type: string
+        has_image:
+          type: boolean
+        id:
+          type: string
+        image_url:
+          type: string
+        last_active_at:
+          type: integer
+        last_name:
+          type: string
+        last_sign_in_at:
+          type: integer
+        locked:
+          type: boolean
+        lockout_expires_in_seconds:
+          type: integer
+          nullable: true
+        object:
+          type: string
+        passkeys:
+          type: array
+          items:
+            type: string
+        password_enabled:
+          type: boolean
+        phone_numbers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PhoneNumber"
+        primary_email_address_id:
+          type: string
+        primary_phone_number_id:
+          type: string
+        primary_web3_wallet_id:
+          type: string
+          nullable: true
+        private_metadata:
+          type: object
+        profile_image_url:
+          type: string
+        public_metadata:
+          type: object
+        saml_accounts:
+          type: array
+          items:
+            type: string
+        totp_enabled:
+          type: boolean
+        two_factor_enabled:
+          type: boolean
+        unsafe_metadata:
+          type: object
+        updated_at:
+          type: integer
+        username:
+          type: string
+        verification_attempts_remaining:
+          type: integer
+        web3_wallets:
+          type: array
+          items:
+            type: string
+    EmailAddress:
+      type: object
+      properties:
+        created_at:
+          type: integer
+        email_address:
+          type: string
+        id:
+          type: string
+        linked_to:
+          type: array
+          items:
+            $ref: "#/components/schemas/LinkedAccount"
+        object:
+          type: string
+        reserved:
+          type: boolean
+        updated_at:
+          type: integer
+        verification:
+          $ref: "#/components/schemas/Verification"
+    ExternalAccount:
+      type: object
+      properties:
+        approved_scopes:
+          type: string
+        created_at:
+          type: integer
+        email_address:
+          type: string
+        family_name:
+          type: string
+        given_name:
+          type: string
+        google_id:
+          type: string
+        id:
+          type: string
+        label:
+          type: string
+          nullable: true
+        object:
+          type: string
+        picture:
+          type: string
+        public_metadata:
+          type: object
+        updated_at:
+          type: integer
+        username:
+          type: string
+          nullable: true
+        verification:
+          $ref: "#/components/schemas/Verification"
+    LinkedAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+    PhoneNumber:
+      type: object
+      properties:
+        backup_codes:
+          type: string
+          nullable: true
+        created_at:
+          type: integer
+        default_second_factor:
+          type: boolean
+        id:
+          type: string
+        linked_to:
+          type: array
+          items:
+            type: string
+        object:
+          type: string
+        phone_number:
+          type: string
+        reserved:
+          type: boolean
+        reserved_for_second_factor:
+          type: boolean
+        updated_at:
+          type: integer
+        verification:
+          $ref: "#/components/schemas/Verification"
+    Verification:
+      type: object
+      properties:
+        attempts:
+          type: integer
+          nullable: true
+        expire_at:
+          type: integer
+          nullable: true
+        status:
+          type: string
+        strategy:
+          type: string
+    Options:
+      type: object
+      properties:
+        limit:
+          type: integer
+          example: 20
+        skip:
+          type: integer
+          example: 0
+        count:
+          type: integer
+          example: 1
+    APIProduct:
+      type: object
+      required:
+        - id
+        - name
+        - gtin
+      properties:
+        id:
+          type: integer
+          description: ID of the product
+          example: 123456
+        name:
+          type: string
+          description: Name of the product
+          example: iPhone 13
+        origin:
+          type: string
+          description: Origin of the product
+          example: BarcodeSpider
+        description:
+          type: string
+          description: Description of the product
+          example: Latest iPhone model
+        brand:
+          type: string
+          description: Brand of the product
+          example: Apple
+        image:
+          type: string
+          description: Image URL of the product
+          example: https://example.com/iphone13.jpg
+        gtin:
+          type: string
+          description: Global Trade Item Number of the product
+          example: 1234567890123
+        category:
+          type: string
+          description: Category of the product
+          example: Electronics
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      description: ID of the user
+      required: true
+      schema:
+        $ref: "#/components/schemas/UserId"
+    ProductId:
+      name: productId
+      in: path
+      description: ID of the product
+      required: true
+      schema:
+        $ref: "#/components/schemas/ProductId"
+    HouseholdId:
+      name: householdId
+      in: path
+      description: ID of the household
+      required: true
+      schema:
+        $ref: "#/components/schemas/HouseholdId"
+    CategoryId:
+      name: categoryId
+      in: path
+      description: ID of the category
+      required: true
+      schema:
+        $ref: "#/components/schemas/CategoryId"
+    CategoryIdQuery:
+      name: categoryId
+      in: query
+      description: ID of the category
+      required: true
+      schema:
+        $ref: "#/components/schemas/CategoryId"
+    ProductIdQuery:
+      name: productId
+      in: query
+      description: ID of the product
+      required: true
+      schema:
+        $ref: "#/components/schemas/ProductId"
+    SkipQuery:
+      name: skip
+      in: query
+      description: Number of items to skip
+      required: false
+      schema:
+        type: integer
+        default: 0
+        example: 0
+    LimitQuery:
+      name: limit
+      in: query
+      description: Number of items to return
+      required: false
+      schema:
+        type: integer
+        default: 20
+        example: 20
