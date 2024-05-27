@@ -70,13 +70,18 @@
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "Category Endpoints",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete",
-        "api-reference/category/create-a-new-category"
+        "api-reference/category/create-a-new-category",
+        "api-reference/category/delete-category-by-id",
+        "api-reference/category/get-categories-by-category-id",
+        "api-reference/category/get-categories-by-household-id",
+        "api-reference/category/update-category-by-id"
       ]
+    },
+    {
+      "group": "Household Endpoints",
+      "pages": ["api-reference/household/**"]
     }
   ],
   "footerSocials": {
