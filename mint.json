@@ -81,7 +81,56 @@
     },
     {
       "group": "Household Endpoints",
-      "pages": ["api-reference/household/**"]
+      "pages": [
+        "api-reference/household/add-a-member-to-the-household",
+        "api-reference/household/create-a-new-household",
+        "api-reference/household/generate-invite-code-for-the-household",
+        "api-reference/household/get-households-by-user-id"
+      ]
+    },
+    {
+      "group": "User Endpoints",
+      "pages": [
+        "api-reference/user/create-a-new-clerk-user",
+        "api-reference/user/create-a-new-user",
+        "api-reference/user/delete-user-by-id",
+        "api-reference/user/get-user-by-id",
+        "api-reference/user/update-an-existing-user"
+      ]
+    },
+    {
+      "group": "Product Endpoints",
+      "pages": [
+        "api-reference/product/create-a-new-item",
+        "api-reference/product/delete-item-by-id",
+        "api-reference/product/get-item-by-id",
+        "api-reference/product/get-items-by-category-id",
+        "api-reference/product/update-item-by-id"
+      ]
+    },
+    {
+      "group": "Product Search Endpoints",
+      "pages": ["api-reference/product/search-for-items", "api-reference/product/get-item-by-gtin"]
+    },
+    {
+      "group": "Product Alert Endpoints",
+      "pages": [
+        "api-reference/product/create-a-new-alert-for-a-product",
+        "api-reference/product/delete-alert-by-id",
+        "api-reference/product/get-alert-by-id",
+        "api-reference/product/get-alerts-by-productid-id",
+        "api-reference/product/update-alert-by-id"
+      ]
+    },
+    {
+      "group": "Product Tasks Endpoints",
+      "pages": [
+        "api-reference/product/create-a-new-task-for-a-product",
+        "api-reference/product/delete-task-by-id",
+        "api-reference/product/get-task-by-id",
+        "api-reference/product/get-tasks-by-product-id",
+        "api-reference/product/update-task-by-id"
+      ]
     }
   ],
   "footerSocials": {
