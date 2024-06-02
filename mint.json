@@ -65,66 +65,65 @@
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Category Endpoints",
+      "group": "User",
       "pages": [
-        "api-reference/category/create-a-new-category",
-        "api-reference/category/delete-category-by-id",
-        "api-reference/category/get-categories-by-category-id",
-        "api-reference/category/get-categories-by-household-id",
-        "api-reference/category/update-category-by-id"
+        "api-reference\\user\\update-an-existing-user",
+        "api-reference\\user\\create-a-new-user",
+        "api-reference\\user\\create-a-new-clerk-user",
+        "api-reference\\user\\get-user-by-id",
+        "api-reference\\user\\delete-user-by-id"
       ]
     },
     {
-      "group": "Household Endpoints",
+      "group": "Household",
       "pages": [
-        "api-reference/household/add-a-member-to-the-household",
-        "api-reference/household/create-a-new-household",
-        "api-reference/household/generate-invite-code-for-the-household",
-        "api-reference/household/get-households-by-user-id"
+        "api-reference\\household\\get-households-by-user-id",
+        "api-reference\\household\\create-a-new-household",
+        "api-reference\\household\\add-a-member-to-the-household",
+        "api-reference\\household\\generate-invite-code-for-the-household"
       ]
     },
     {
-      "group": "User Endpoints",
+      "group": "Product",
       "pages": [
-        "api-reference/user/create-a-new-clerk-user",
-        "api-reference/user/create-a-new-user",
-        "api-reference/user/delete-user-by-id",
-        "api-reference/user/get-user-by-id",
-        "api-reference/user/update-an-existing-user"
+        "api-reference\\product\\create-a-new-item",
+        "api-reference\\product\\get-items-by-category-id",
+        "api-reference\\product\\update-item-by-id",
+        "api-reference\\product\\delete-item-by-id",
+        "api-reference\\product\\get-item-by-id",
+        "api-reference\\product\\update-item-quantity",
+        "api-reference\\product\\search-for-items",
+        "api-reference\\product\\get-item-by-gtin"
       ]
     },
     {
-      "group": "Product Endpoints",
+      "group": "Product Alerts",
       "pages": [
-        "api-reference/product/create-a-new-item",
-        "api-reference/product/delete-item-by-id",
-        "api-reference/product/get-item-by-id",
-        "api-reference/product/get-items-by-category-id",
-        "api-reference/product/update-item-by-id"
+        "api-reference\\product-alerts\\get-alerts-by-productid-id",
+        "api-reference\\product-alerts\\create-a-new-alert-for-a-product",
+        "api-reference\\product-alerts\\get-alert-by-id",
+        "api-reference\\product-alerts\\delete-alert-by-id",
+        "api-reference\\product-alerts\\update-alert-by-id"
       ]
     },
     {
-      "group": "Product Search Endpoints",
-      "pages": ["api-reference/product/search-for-items", "api-reference/product/get-item-by-gtin"]
-    },
-    {
-      "group": "Product Alert Endpoints",
+      "group": "Product Tasks",
       "pages": [
-        "api-reference/product/create-a-new-alert-for-a-product",
-        "api-reference/product/delete-alert-by-id",
-        "api-reference/product/get-alert-by-id",
-        "api-reference/product/get-alerts-by-productid-id",
-        "api-reference/product/update-alert-by-id"
+        "api-reference\\product-tasks\\get-tasks-by-product-id",
+        "api-reference\\product-tasks\\create-a-new-task-for-a-product",
+        "api-reference\\product-tasks\\get-task-by-id",
+        "api-reference\\product-tasks\\delete-task-by-id",
+        "api-reference\\product-tasks\\update-task-by-id"
       ]
     },
     {
-      "group": "Product Tasks Endpoints",
+      "group": "Category",
       "pages": [
-        "api-reference/product/create-a-new-task-for-a-product",
-        "api-reference/product/delete-task-by-id",
-        "api-reference/product/get-task-by-id",
-        "api-reference/product/get-tasks-by-product-id",
-        "api-reference/product/update-task-by-id"
+        "api-reference\\category\\get-categories-by-category-id",
+        "api-reference\\category\\update-category-by-id",
+        "api-reference\\category\\create-a-new-category",
+        "api-reference\\category\\delete-category-by-id",
+        "api-reference\\category\\get-categories-by-household-id"
       ]
     }
   ],

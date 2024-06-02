@@ -16,6 +16,10 @@ tags:
     description: Household management
   - name: Product
     description: Item management
+  - name: Product Alerts
+    description: Product alert management
+  - name: Product Tasks
+    description: Product task management
   - name: Category
     description: Category management
 paths:
@@ -230,7 +234,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/ProductIdQuery"
       tags:
-        - Product
+        - Product Alerts
       responses:
         "200":
           description: Alerts found
@@ -248,7 +252,7 @@ paths:
       summary: Create a new alert for a product
       operationId: createAlert
       tags:
-        - Product
+        - Product Alerts
       requestBody:
         required: true
         content:
@@ -278,7 +282,7 @@ paths:
       summary: Get alert by ID
       operationId: getAlertById
       tags:
-        - Product
+        - Product Alerts
       responses:
         "200":
           description: Alert found
@@ -294,7 +298,7 @@ paths:
       summary: Update alert by ID
       operationId: updateAlert
       tags:
-        - Product
+        - Product Alerts
       requestBody:
         required: true
         content:
@@ -316,7 +320,7 @@ paths:
       summary: Delete alert by ID
       operationId: deleteAlert
       tags:
-        - Product
+        - Product Alerts
       responses:
         "204":
           description: Alert deleted
@@ -331,7 +335,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/ProductIdQuery"
       tags:
-        - Product
+        - Product Tasks
       responses:
         "200":
           description: Tasks found
@@ -349,7 +353,7 @@ paths:
       summary: Create a new task for a product
       operationId: createTask
       tags:
-        - Product
+        - Product Tasks
       requestBody:
         required: true
         content:
@@ -379,7 +383,7 @@ paths:
       summary: Get task by ID
       operationId: getTaskById
       tags:
-        - Product
+        - Product Tasks
       responses:
         "200":
           description: Task found
@@ -395,7 +399,7 @@ paths:
       summary: Update task by ID
       operationId: updateTask
       tags:
-        - Product
+        - Product Tasks
       requestBody:
         required: true
         content:
@@ -417,7 +421,7 @@ paths:
       summary: Delete task by ID
       operationId: deleteTask
       tags:
-        - Product
+        - Product Tasks
       responses:
         "204":
           description: Task deleted
@@ -619,6 +623,25 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "500":
           $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Update item quantity
+      operationId: updateItemQuantity
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      tags:
+        - Product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductQuantityRequest"
+      responses:
+        "200":
+          description: Item updated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /api/v1/product/search/{householdId}:
     get:
       summary: Search for items
@@ -644,7 +667,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Product"
+                  $ref: "#/components/schemas/ProductSearchResult"
         "400":
           $ref: "#/components/responses/BadRequest"
         "500":
@@ -676,19 +699,42 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 components:
   schemas:
+    UpdateProductQuantityRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+        - action
+        - origin
+      properties:
+        productId:
+          $ref: "#/components/schemas/ProductId"
+        quantity:
+          type: number
+          format: double
+          description: Quantity of the item
+          example: 10
+        action:
+          $ref: "#/components/schemas/ItemAction"
+        origin:
+          $ref: "#/components/schemas/Origin"
+    Origin:
+      type: string
+      description: Origin of the transaction
+      enum:
+        - USER
+        - TASK
+        - SYSTEM
     ProductsByCategoryResponse:
       type: object
       required:
         - categoryId
-        - householdId
         - categoryName
         - options
         - products
       properties:
         categoryId:
           $ref: "#/components/schemas/CategoryId"
-        householdId:
-          $ref: "#/components/schemas/HouseholdId"
         categoryName:
           $ref: "#/components/schemas/Name"
         options:
@@ -707,17 +753,11 @@ components:
     ProductTaskRequest:
       type: object
       required:
-        - householdId
-        - categoryId
         - productId
         - action
         - quantity
         - frequency
       properties:
-        householdId:
-          $ref: "#/components/schemas/HouseholdId"
-        categoryId:
-          $ref: "#/components/schemas/CategoryId"
         productId:
           $ref: "#/components/schemas/ProductId"
         action:
@@ -750,16 +790,10 @@ components:
     ProductAlertRequest:
       type: object
       required:
-        - householdId
-        - categoryId
         - productId
         - threshold
         - type
       properties:
-        householdId:
-          $ref: "#/components/schemas/HouseholdId"
-        categoryId:
-          $ref: "#/components/schemas/CategoryId"
         productId:
           $ref: "#/components/schemas/ProductId"
         threshold:
@@ -799,8 +833,10 @@ components:
       type: string
       description: How the invite code should be sent
       enum:
-        - email
-        - sms
+        - 0 # Nothing
+        - 1 # EMAIL
+        - 2 # SMS
+        - 3 # EMAIL && SMS
     AddMemberToHouseholdRequest:
       type: object
       required:
@@ -865,10 +901,6 @@ components:
           $ref: "#/components/schemas/HouseholdId"
         name:
           $ref: "#/components/schemas/Name"
-        description:
-          type: string
-          description: Description of the category
-          example: Electronic devices
         createdBy:
           $ref: "#/components/schemas/UserId"
         icon:
@@ -885,7 +917,6 @@ components:
         - name
         - quantity
         - defaultQuantity
-        - householdId
         - categoryId
         - createdBy
       properties:
@@ -905,6 +936,20 @@ components:
           type: string
           description: Unit of the item
           example: pcs
+        unitType:
+          $ref: "#/components/schemas/UnitType"
+        definedCategory:
+          type: string
+          description: User defined category of the item
+          enum:
+            - FOOD
+            - PREPARED_FOOD
+            - RAW_FOOD
+            - PREP_FOOD
+            - BEVERAGE
+            - LIQUID
+            - DAIRY
+            - OTHER
         description:
           type: string
           description: Description of the item
@@ -925,12 +970,50 @@ components:
           $ref: "#/components/schemas/DateString"
         purchaseDate:
           $ref: "#/components/schemas/DateString"
-        householdId:
-          $ref: "#/components/schemas/HouseholdId"
         categoryId:
           $ref: "#/components/schemas/CategoryId"
         createdBy:
           $ref: "#/components/schemas/UserId"
+        brand:
+          type: string
+          description: Brand of the item
+          example: Apple
+        createdAt:
+          $ref: "#/components/schemas/DateString"
+    ProductSearchResult:
+      type: object
+      required:
+        - id
+        - name
+        - quantity
+        - defaultQuantity
+        - categoryId
+        - categoryName
+      properties:
+        id:
+          $ref: "#/components/schemas/ExposedId"
+        name:
+          $ref: "#/components/schemas/Name"
+        quantity:
+          type: number
+          description: Quantity of the item
+          example: 10
+        defaultQuantity:
+          type: number
+          description: Default quantity of the item
+          example: 10
+        categoryId:
+          $ref: "#/components/schemas/CategoryId"
+        categoryName:
+          $ref: "#/components/schemas/Name"
+        brand:
+          type: string
+          description: Brand of the item
+          example: Apple
+        unit:
+          type: string
+          description: Unit of the item
+          example: pcs
     CreateHouseholdRequest:
       type: object
       required:
@@ -962,33 +1045,40 @@ components:
           example: 123e4567-e89b-12d3-a456-426614174000
         inviteCode:
           $ref: "#/components/schemas/InviteCode"
-    ItemUnit:
+    UnitType:
       type: string
       description: Unit of the item
       enum:
-        - unit
-        - kg
-        - g
-        - l
-        - ml
-        - lbs
-        - pcs
-        - pack
-        - bottle
-        - can
-        - jar
-        - box
-        - bag
-        - roll
-        - piece
+        - COUNT
+        - WEIGHT
+        - VOLUME
+    #    ItemUnit:
+    #      type: string
+    #      description: Unit of the item
+    #      enum:
+    #        - unit
+    #        - kg
+    #        - g
+    #        - l
+    #        - ml
+    #        - lbs
+    #        - pcs
+    #        - pack
+    #        - bottle
+    #        - can
+    #        - jar
+    #        - box
+    #        - bag
+    #        - roll
+    #        - piece
     ItemAction:
       type: string
       description: Action to be performed on the item
       example: increase
       enum:
-        - increase
-        - decrease
-        - set
+        - INCREMENT
+        - DECREMENT
+        - SET
     HouseholdMemberResponse:
       type: array
       items:
@@ -1011,12 +1101,12 @@ components:
     HouseholdRole:
       type: string
       description: Role of the user in the household
-      default: member
+      default: MEMBER
       enum:
-        - admin
-        - member
-        - owner
-        - observer
+        - ADMIN
+        - OWNER
+        - MEMBER
+        - OBSERVER
     DateString:
       type: string
       description: date in yyyy-MM-dd format
@@ -1026,8 +1116,8 @@ components:
       type: string
       description: Type of the alert
       enum:
-        - quantity
-        - expiration
+        - QUANTITY
+        - EXPIRATION
     HouseholdId:
       type: integer
       description: Identifier for the household to invite the user to
@@ -1085,14 +1175,14 @@ components:
       type: string
       description: Frequency of the task
       enum:
-        - daily
-        - weekly
-        - bi-weekly
-        - monthly
-        - bi-monthly
-        - quarterly
-        - semi-annually
-        - annually
+        - DAILY
+        - WEEKLY
+        - BI-WEEKLY
+        - MONTHLY
+        - BI-MONTHLY
+        - QUARTERLY
+        - SEMI-ANNUALLY
+        - ANNUALLY
     ExposedId:
       type: integer
       description: Identifier for the object
@@ -1144,7 +1234,7 @@ components:
         create_organization_enabled:
           type: boolean
         created_at:
-          type: integer
+          type: number
         delete_self_enabled:
           type: boolean
         email_addresses:
@@ -1167,15 +1257,15 @@ components:
         image_url:
           type: string
         last_active_at:
-          type: integer
+          type: number
         last_name:
           type: string
         last_sign_in_at:
-          type: integer
+          type: number
         locked:
           type: boolean
         lockout_expires_in_seconds:
-          type: integer
+          type: number
           nullable: true
         object:
           type: string
@@ -1213,11 +1303,11 @@ components:
         unsafe_metadata:
           type: object
         updated_at:
-          type: integer
+          type: number
         username:
           type: string
         verification_attempts_remaining:
-          type: integer
+          type: number
         web3_wallets:
           type: array
           items:
@@ -1226,7 +1316,7 @@ components:
       type: object
       properties:
         created_at:
-          type: integer
+          type: number
         email_address:
           type: string
         id:
@@ -1240,7 +1330,7 @@ components:
         reserved:
           type: boolean
         updated_at:
-          type: integer
+          type: number
         verification:
           $ref: "#/components/schemas/Verification"
     ExternalAccount:
@@ -1249,7 +1339,7 @@ components:
         approved_scopes:
           type: string
         created_at:
-          type: integer
+          type: number
         email_address:
           type: string
         family_name:
@@ -1270,7 +1360,7 @@ components:
         public_metadata:
           type: object
         updated_at:
-          type: integer
+          type: number
         username:
           type: string
           nullable: true
@@ -1290,7 +1380,7 @@ components:
           type: string
           nullable: true
         created_at:
-          type: integer
+          type: number
         default_second_factor:
           type: boolean
         id:
@@ -1308,17 +1398,17 @@ components:
         reserved_for_second_factor:
           type: boolean
         updated_at:
-          type: integer
+          type: number
         verification:
           $ref: "#/components/schemas/Verification"
     Verification:
       type: object
       properties:
         attempts:
-          type: integer
+          type: number
           nullable: true
         expire_at:
-          type: integer
+          type: number
           nullable: true
         status:
           type: string
